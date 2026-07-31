@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Experience } from "@/types/experience";
+import { useFavorites } from "@/context/FavoritesContext";
 
 interface ExperienceCardProps {
   experience: Experience;
@@ -10,6 +11,8 @@ interface ExperienceCardProps {
 export default function ExperienceCard({ experience }: ExperienceCardProps) {
   const { id, title, imageUrl, category, destination, price, rating } =
     experience;
+  const { isFavorited, toggleFavorite } = useFavorites();
+  const favorited = isFavorited(id);
 
   const destinationLabel =
     typeof destination === "string"
@@ -43,23 +46,27 @@ export default function ExperienceCard({ experience }: ExperienceCardProps) {
         >
           {category}
         </span>
-        {/* Favorite toggle placeholder (added in a later phase) */}
+        {/* Favorite toggle */}
         <button
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            /* favorite toggle will be added later */
+            toggleFavorite(id);
           }}
-          className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm transition-colors hover:bg-white dark:bg-zinc-900/80 dark:hover:bg-zinc-900"
-          aria-label="Toggle favorite"
+          className={`absolute top-3 right-3 flex size-8 items-center justify-center rounded-full backdrop-blur-sm transition-all ${
+            favorited
+              ? "bg-pink-100 text-pink-600 dark:bg-pink-900/50 dark:text-pink-300"
+              : "bg-white/80 text-zinc-500 hover:bg-white dark:bg-zinc-900/80 dark:text-zinc-400 dark:hover:bg-zinc-900"
+          }`}
+          aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            fill="none"
+            fill={favorited ? "currentColor" : "none"}
             stroke="currentColor"
             strokeWidth={2}
-            className="size-4 text-zinc-500 dark:text-zinc-400"
+            className="size-4"
           >
             <path
               strokeLinecap="round"
